@@ -20,6 +20,14 @@ import { Api } from './api';
   } @empty { <span class="mut">No messages yet. Say hello to the other polls.</span> }
  </div>
  <form class="row" (submit)="send($event,t)"><input #t placeholder="Write a message" maxlength="1000"><button>Send</button></form></section>}
+@if (api.alerts().length) {
+<div class="alerts" role="alertdialog" aria-live="assertive">
+ @for (x of api.alerts(); track x.key) {
+  <div class="alert" [class.drop]="x.kind==='Drop'"><div class="ai">{{x.kind==='Drop' ? '🔻' : '🧍'}}</div>
+   <div class="sp"><b>{{x.text}}</b><div>Next stop: <b>{{x.stop}}</b></div></div>
+   <button (click)="api.closeAlert(x.key)">Close</button></div>
+ }</div>}
+@if (!api.net()) { <div class="offline">Reconnecting…</div> }
 @if (api.toast()) { <div class="toast" role="status" (click)="tapToast()">{{api.toast()}}@if (api.toastChat()) {<small> · tap to open</small>}</div> }
 }
 <router-outlet />` })
