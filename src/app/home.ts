@@ -55,13 +55,6 @@ import { Api } from "./api";
             Start the journey first. The spots below unlock after you start.
           </p>
         }
-        @if (j?.status === "active") {
-          <div class="banner ok">
-            <span class="live"></span>Journey started{{
-              j.reached_at ? " at " + time(j.reached_at) : ""
-            }}. Tick each spot in order.
-          </div>
-        }
         @if (j?.status === "completed") {
           <div class="banner ok">
             ✅ Journey completed{{ rs[at] ? " at " + rs[at].label : "" }}. The
