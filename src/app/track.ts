@@ -76,7 +76,7 @@ import { Api } from "./api";
               <div class="row">
                 <b>{{ p.name }}</b
                 ><span class="sp"></span>
-                @if (p.active && j) {
+                @if (api.live(p)) {
                   <span class="chip" [class]="'chip ' + j.status">{{
                     j.status
                   }}</span>
@@ -88,7 +88,7 @@ import { Api } from "./api";
                 {{
                   a >= 0
                     ? "At " + api.recs(p)[a].label
-                    : p.active && j
+                    : api.live(p)
                       ? "Waiting to leave"
                       : "Not active"
                 }}
@@ -143,9 +143,7 @@ export class Track {
   // Only directions in action are drawn: running buses first; if none, planned ones; if none, completed ones.
   maps() {
     const dirOf = (p: any) => this.api.journey(p).direction || "onward";
-    const live = this.api
-      .polls()
-      .filter((p) => p.active && this.api.journey(p));
+    const live = this.api.polls().filter((p) => this.api.live(p));
     const lvl = (st: string) =>
       live.filter((p) => this.api.journey(p).status === st);
     const shown =
