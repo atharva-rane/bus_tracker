@@ -57,8 +57,7 @@ import { Api } from "./api";
         }
         @if (j?.status === "active") {
           <div class="banner ok">
-            <span class="live"></span>
-            Journey started{{
+            <span class="live"></span>Journey started{{
               j.started_at ? " at " + time(j.started_at) : ""
             }}. Tick each spot in order.
           </div>
