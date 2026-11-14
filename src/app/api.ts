@@ -1,5 +1,6 @@
 import { Injectable, signal, inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { API_URL } from './env';
 @Injectable({ providedIn: 'root' })
 export class Api {
   router = inject(Router);
@@ -30,7 +31,7 @@ export class Api {
     if (typeof Notification !== 'undefined' && Notification.permission === 'granted') new Notification(`${kind} on the next stop`, { body: nxt.label, requireInteraction: true });
   }
   async call(method: string, url: string, body?: any) {
-    const r = await fetch('/api' + url, { method, headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + this.token() }, body: body ? JSON.stringify(body) : undefined });
+    const r = await fetch(API_URL + '/api' + url, { method, headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + this.token() }, body: body ? JSON.stringify(body) : undefined });
     const d = await r.json().catch(() => ({}));
     if (r.status === 401 && this.token()) { this.logout(); throw new Error('Session expired'); }
     if (!r.ok) throw new Error(d.error || 'Something went wrong');
@@ -60,7 +61,7 @@ export class Api {
   }
   private open() {
     const t = this.token(); if (!t) return; this.ws?.close();
-    const ws = this.ws = new WebSocket(`${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/ws?token=${t}`);
+    const ws = this.ws = new WebSocket(`${API_URL ? API_URL.replace(/^http/, 'ws') : (location.protocol === 'https:' ? 'wss' : 'ws') + '://' + location.host}/ws?token=${t}`);
     ws.onopen = () => { if (this.retry) { this.loadState().catch(() => 0); this.loadMsgs().catch(() => 0); } this.retry = 0; this.net.set(true); };
     ws.onmessage = e => { const { ev, data } = JSON.parse(e.data); if (ev === 'state') this.loadState().catch(() => 0); else if (ev === 'msg') this.onMsg(data); };
     ws.onclose = e => { if (this.ws !== ws) return; this.net.set(false); if (!this.token() || e.code === 4401) return;
